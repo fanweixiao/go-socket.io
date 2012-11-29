@@ -29,7 +29,7 @@ type Conn struct {
 	sio              *SocketIO // The server.
 	sessionid        SessionID
 	online           bool
-	lastConnected    int64
+	lastConnected    time.Time
 	lastDisconnected int64
 	lastHeartbeat    heartbeat
 	numHeartbeats    int
