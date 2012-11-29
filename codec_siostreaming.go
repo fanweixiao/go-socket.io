@@ -117,12 +117,13 @@ func (dec *sioStreamingDecoder) Reset() {
 
 func (dec *sioStreamingDecoder) Decode() (messages []Message, err error) {
 	messages = make([]Message, 0, 1)
-	var c int
-	var typ uint
+	var c rune
+	var typ uint64
 
 L:
 	for {
-		c, _, err = dec.src.ReadRune()
+		// c = utf8.rune
+		c, _, err := dec.src.ReadRune()
 		if err != nil {
 			break
 		}
@@ -224,11 +225,11 @@ L:
 				dec.buf.WriteRune(c)
 				dec.length--
 
-				utf8str := utf8.NewString(dec.src.String())
-				if utf8str.RuneCount() >= dec.length {
-					str := utf8str.Slice(0, dec.length)
-					dec.buf.WriteString(str)
-					dec.src.Next(len(str))
+				utf8str, utf8strlen := utf8.DecodeRuneInString(dec.src.String())
+				if utf8strlen >= dec.length {
+					bytes := make([]byte,dec.length)
+					dec.buf.Write(bytes)
+					dec.src.Next(len(bytes))
 					dec.length = 0
 					continue
 				} else {
