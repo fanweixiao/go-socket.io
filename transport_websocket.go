@@ -3,7 +3,7 @@ package socketio
 import (
 	"errors"
 	"net/http"
-	"websocket"
+	"code.google.com/p/go.net/websocket"
 )
 
 var errWebsocketHandshake = errors.New("websocket handshake error")
