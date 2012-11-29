@@ -215,7 +215,7 @@ L:
 			dec.buf.Reset()
 		}
 
-		c, _, err = dec.src.ReadRune()
+		c, _, err := dec.src.ReadRune()
 		if err != nil {
 			break
 		}
@@ -272,11 +272,13 @@ L:
 				dec.buf.WriteRune(c)
 				dec.length--
 
-				utf8str := utf8.NewString(dec.src.String())
+				utf8str, utf8strlen := utf8.DecodeRuneInString(dec.src.String())
 
-				if utf8str.RuneCount() >= dec.length {
-					str := utf8str.Slice(0, dec.length)
-					dec.buf.WriteString(str)
+				if utf8strlen >= dec.length {
+					str := make([]byte,dec.length)
+					utf8.EncodeRune(str,utf8str)
+					// str := utf8str.Slice(0, dec.length)
+					dec.buf.Write(str)
 					dec.src.Next(len(str))
 					dec.length = 0
 				} else {
