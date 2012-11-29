@@ -30,7 +30,7 @@ type Conn struct {
 	sessionid        SessionID
 	online           bool
 	lastConnected    time.Time
-	lastDisconnected int64
+	lastDisconnected time.Time
 	lastHeartbeat    heartbeat
 	numHeartbeats    int
 	ticker           *time.Ticker
@@ -250,7 +250,7 @@ Loop:
 			return
 		}
 
-		if (!c.online && t-c.lastDisconnected > c.sio.config.ReconnectTimeout) || int(c.lastHeartbeat) < c.numHeartbeats {
+		if (!c.online && t.Unix() - c.lastDisconnected.Unix() > c.sio.config.ReconnectTimeout) || int(c.lastHeartbeat) < c.numHeartbeats {
 			c.disconnect()
 			c.mutex.Unlock()
 			break
